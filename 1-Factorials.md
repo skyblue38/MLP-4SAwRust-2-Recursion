@@ -4,10 +4,10 @@ The outcome for this milestone is a recursive `factorial` function that calculat
 1. Create a new Rust object for the first milestone using `cargo`
 ``` bash
 $ cargo new MLP/FSAwRust-2-Recursion/M1-Recursion
-     Created binary (application) `MLP/FSAwRust-2-Recursion/M1-Recursion` package
+     Created binary (application) `MLP/FSAwRust-2-Recursion/m1-recursion` package
 ```
 
-2.  Open the new rust code object in the code editor `geany MLP/FSAwRust-2-Recursion/M1-Recursion/src/main.rs `
+2.  Open the new rust code object in the code editor `geany MLP/FSAwRust-2-Recursion/m1-recursion/src/main.rs `
 
 3. Enter the following code:
 ``` rust
@@ -40,7 +40,7 @@ fn main() {
     }
 }
 ```
-4.  Run the code in `geany` using the *run* button. The following output was produced:
+4.  Compile and Run the code in `geany` using the *run* button. The following output was produced:
 ``` text
 0! = 1
 1! = 1

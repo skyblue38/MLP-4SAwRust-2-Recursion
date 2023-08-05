@@ -1,4 +1,4 @@
-![](MLP-4SAwRust-2Recursion/ManningLogo.png)
+![](ManningLogo.png)
 # MLP-4SAwRust-2 [Problem Solving with Recursion](https://liveproject.manning.com/project/1553)
 This liveProject, will work up to solving the [Tower of Hanoi](https://en.wikipedia.org/wiki/Tower_of_Hanoi) puzzle. First, some simpler functions will be implemented to develop recursive brain techniques, then three game-related problems will be solved: the knight’s tour, the N queen’s problem and finally, the Tower of Hanoi. These demonstrate important recursive techniques including methods for searching in large solution spaces.
 ## PROJECT MILESTONES

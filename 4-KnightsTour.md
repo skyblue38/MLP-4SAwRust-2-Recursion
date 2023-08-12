@@ -80,7 +80,12 @@ fn dump_board(board: &mut [[i32; NUM_COLS]; NUM_ROWS]) {
 }
 ```
 ### 4. Add the `find_tour` function
-Given a board, list of moves, current position and number of moves completed, recursively find the next move and return `True` for **Open** tours where all squares have been visited, or where the next possible moves includes the original position for **Closed** tours; Otherwise return `False` to indicate that no solution has been found. The rust code for these functions is shown below:
+Given a board, list of moves, current position and number of moves completed, recursively find the next move and return `True` for **Open** tours where all squares have been visited, or where the next possible moves includes the original position for **Closed** tours; Otherwise return `False` to indicate that no solution has been found.
+
+Summary of the recursive algorithm is shown as a flowchart below:
+![](find_tour().jpg)
+
+The rust code for these functions is shown below:
 ``` rust
 // Check that a proposed new board position is valid
 // Retrun False if off-the-board

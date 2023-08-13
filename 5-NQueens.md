@@ -117,7 +117,7 @@ This function returns `true` if the board is legal and contains `num_rows` queen
 Use the `board_is_legal` function to tell if the board is legal and then loop through the board counting queens to see if it is a solution.
 
 Here is the function code:
-```
+``` rust
 // Return true if the board is legal and a solution.
 fn board_is_a_solution(board: &mut [[char; NUM_COLS]; NUM_ROWS]) -> bool {
     // See if it is legal.
@@ -208,6 +208,165 @@ Q . . . . .
 With NUM_ROWS set to 7, the result was:
 ``` bash
 ?
+```
+### 8. Enhancement - *place_queens_3*
+These enhancements are based on sample code provided by the series author, Rod Stephens
+
+For this approach, a two-dimensional array holds the number of queens that can attack each square. Initially that array is full of zeros because there are no queens on the board. When a queen is added, the attack counts are incremented for the squares in the new queen’s row, column, and diagonals by calling a function called `adjust_attack_counts`. This is faster than the `board_is_legal` function used in previous methods, because it doesn’t need to examine every row, column, and diagonal.)
+
+So, when `place_queens_3` adds a queen to a square, it only does so if the attack count for that square is currently zero. That eliminates all of the arrangements where there is already a queen that can attack that square.
+
+When it _does_ add a queen, `place_queens_3` calls itself recursively. If that recursive call returns `false`, then the function removes the queen and calls `adjust_attack_counts` again to decrement the appropriate attack counts.
+
+Here is the code for `adjust_attack_counts`:
+``` rust
+// Add amount to the attack counts for this square.
+fn adjust_attack_counts(num_attacking: &mut [[i32; NUM_COLS]; NUM_ROWS], r: i32, c: i32, amount: i32) {
+    // Attacks in the same row.
+    for i in 0..INUM_COLS {
+        num_attacking[r as usize][i as usize] += amount
+    }
+    // Attacks in the same column.
+    for i in 0..INUM_ROWS {
+        num_attacking[i as usize][c as usize] += amount
+    }
+    // Attacks in the upper left to lower right diagonal.
+    for i in -INUM_ROWS..INUM_ROWS {
+        let test_r = r + i;
+        let test_c = c + i;
+        if test_r >= 0 && test_r < INUM_ROWS &&
+           test_c >= 0 && test_c < INUM_ROWS {
+                num_attacking[test_r as usize][test_c as usize] += amount;
+           }
+    }
+    // Attacks in the upper right to lower left diagonal.
+    for i in -INUM_ROWS..INUM_ROWS {
+        let test_r = r + i;
+        let test_c = c - i;
+        if test_r >= 0 && test_r < INUM_ROWS &&
+           test_c >= 0 && test_c < INUM_ROWS {
+                num_attacking[test_r as usize][test_c as usize] += amount;
+           }
+    }
+}
+```
+
+Here is the code for `place_queens_3` and helper function `do_place_queens_3`:
+``` rust
+// Set up and call place_queens_3.
+fn place_queens_3(board: &mut [[char; NUM_COLS]; NUM_ROWS]) -> bool {
+    // Make the num_attacking array.
+    // The value num_attacking[r as usize][c as usize] is the number
+    // of queens that can attack square (r, c).
+    let mut num_attacking = [[0; NUM_COLS]; NUM_ROWS];
+
+    // Call do_place_queens_3.
+    let mut num_placed = 0;
+    return do_place_queens_3(board, num_placed, 0, 0, &mut num_attacking)
+}
+// Try placing a queen at position [r][c].
+// Keep track of the number of queens placed.
+// Keep running totals of the number of queens attacking a square.
+// Return true if we find a legal board.
+fn do_place_queens_3(board: &mut [[char; NUM_COLS]; NUM_ROWS], mut num_placed: i32, r: i32, c: i32,
+    num_attacking: &mut [[i32; NUM_COLS]; NUM_ROWS]) -> bool
+{
+    // See if we have placed all of the queens.
+    if num_placed == INUM_ROWS {
+        // See if this is a solution.
+        return board_is_a_solution(board);
+    }
+    // See if we have examined the whole board.
+    if r >= INUM_ROWS {
+        // We have examined all of the squares but this is not a solution.
+        return false;
+    }
+    // Find the next square.
+    let mut next_r = r;
+    let mut next_c = c + 1;
+    if next_c >= INUM_ROWS {
+        next_r += 1;
+        next_c = 0;
+    }
+    // Leave no queen in this square and
+    // recursively assign the next square.
+    if do_place_queens_3(board, num_placed, next_r, next_c, num_attacking) {
+        return true;
+    }
+    // See if we can place a queen at (r, c).
+    if num_attacking[r as usize][c as usize] == 0 {
+        // Try placing a queen here and
+        // recursively assigning the next square.
+        board[r as usize][c as usize] = 'Q';
+        num_placed += 1;
+
+        // Increment the attack counts for this queen.
+        adjust_attack_counts(num_attacking, r, c, 1);
+
+        if do_place_queens_3(board, num_placed, next_r, next_c, num_attacking) {
+            return true;
+        }
+        // That didn't work so remove this queen.
+        board[r as usize][c as usize] = '.';
+        num_placed -= 1;
+        adjust_attack_counts(num_attacking, r, c, -1);
+    }
+    // If we get here, then there is no solution from
+    // the board position before this function call.
+    // Return false to backtrack and try again farther up the call stack.
+    return false;
+}
+```
+
+And the main function must be modified to invoke `place_quees_3`, as shown below:
+``` rust
+// N-Queens solution by Rod Stephens - implemented by Chris Freeman (13AUG23)
+use std::time::{Instant};
+// The board dimensions.
+const NUM_ROWS: usize = 8;
+const NUM_COLS: usize = NUM_ROWS;
+const INUM_ROWS: i32 = NUM_ROWS as i32;
+const INUM_COLS: i32 = NUM_COLS as i32;
+fn main() {
+    // Create a NUM_ROWS x NUM_COLS array with all entries Initialized to UNVISITED.
+    let mut board = [['.'; NUM_COLS]; NUM_ROWS];
+    let start = Instant::now();
+//  let success = place_queens_1(&mut board, 0, 0);
+    //let success = place_queens_2(& mut board, 0, 0, 0);
+    let success = place_queens_3(& mut board);
+    let duration = start.elapsed();
+    println!("Time: {:?}", duration);
+    if success {
+        println!("Success!");
+    } else {
+        println!("Could not find a solution.");
+    }
+    dump_board(&mut board);
+}
+```
+### Testing `place_queens_3` enhancements
+With NUM_ROWS set to 12 the following output was produced:
+``` bash
+[sysadmin@centos8s m5-nqueens]$ cargo run --release 
+   Compiling m5-nqueens v0.1.0 (/home/sysadmin/MLP/FSAwRust-2-Recursion/m5-nqueens)
+...
+warning: `m5-nqueens` (bin "m5-nqueens") generated 3 warnings
+    Finished release [optimized] target(s) in 1.74s
+     Running `target/release/m5-nqueens`
+Time: 66.977892628s
+Success!
+. . . . . . . . . . . Q 
+. . . . . . . . . Q . . 
+. . . . . . . Q . . . . 
+. . . . Q . . . . . . . 
+. . Q . . . . . . . . . 
+Q . . . . . . . . . . . 
+. . . . . . Q . . . . . 
+. Q . . . . . . . . . . 
+. . . . . . . . . . Q . 
+. . . . . Q . . . . . . 
+. . . Q . . . . . . . . 
+. . . . . . . . Q . . . 
 ```
 
 ## References

@@ -63,14 +63,17 @@ fn move_disk(posts: &mut [[usize; NUM_DISKS]; 3], from_post: usize, to_post: usi
 	for i in 0..NUM_DISKS {
 		if posts[from_post][i] != 0 { f_row = i; break }
 	}
-    // Find the first non-empty row in to_post.
-	let mut t_row = 0usize;
+    // Find the last empty row in to_post.
+	let mut t_row = NUM_DISKS - 1;
 	for j in 0..NUM_DISKS {
-		if posts[to_post][j] != 0 { t_row = j; break }
+		if posts[to_post][j] != 0 { t_row = j - 1; break }
 	}
     // Swap the values at those positions.
+    // println!("from:{},{} to:{},{}", from_post, f_row, to_post, t_row);
     (posts[from_post][f_row], posts[to_post][t_row]) =
-        (posts[to_post][t_row], posts[from_post][f_row]);	
+        (posts[to_post][t_row], posts[from_post][f_row]);
+	// draw the new post layouts
+	draw_posts(posts);
 }
 ```
 ### 4. Write `move_disks` function
